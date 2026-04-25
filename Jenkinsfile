@@ -56,11 +56,14 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
+                    BROWSER_VALUE="${BROWSER:-chrome}"
+                    SUITE_XML_VALUE="${SUITE_XML:-src/test/resources/test-suites/master.xml}"
+
                     mvn -B -ntp test \
                       -Dexecution=grid \
-                      -Dbrowser="$BROWSER" \
+                      -Dbrowser="$BROWSER_VALUE" \
                       -Dgrid.url="$GRID_URL" \
-                      -Dsurefire.suiteXmlFiles="$SUITE_XML" \
+                      -Dsurefire.suiteXmlFiles="$SUITE_XML_VALUE" \
                       -Dtimezone="$TZ" \
                       -Dtest.timezone="$TZ"
                 '''
