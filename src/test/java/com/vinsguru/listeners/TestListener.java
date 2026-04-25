@@ -2,6 +2,7 @@ package com.vinsguru.listeners;
 
 import com.vinsguru.reports.ExtentReportManager;
 import com.vinsguru.tests.AbstractTest;
+import com.vinsguru.util.DateTimeUtil;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -17,7 +18,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class TestListener implements ITestListener {
@@ -28,6 +28,7 @@ public class TestListener implements ITestListener {
 
     @Override
     public void onStart(ITestContext context) {
+        DateTimeUtil.setDefaultTimeZone();
         ExtentReportManager.initReport(context.getSuite().getName());
         log.info("Suite started: {}", context.getSuite().getName());
     }
@@ -109,7 +110,7 @@ public class TestListener implements ITestListener {
             Path screenshotDir = getScreenshotDirectory(result);
             Files.createDirectories(screenshotDir);
 
-            String fileName = getSafeFileName(result) + "_" + LocalDateTime.now().format(FORMATTER) + ".png";
+            String fileName = getSafeFileName(result) + "_" + DateTimeUtil.now(FORMATTER) + ".png";
             Path destination = screenshotDir.resolve(fileName);
 
             File source = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);

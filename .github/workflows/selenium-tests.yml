@@ -14,6 +14,8 @@ jobs:
     name: Run TestNG suite on Selenium Grid
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      TZ: Asia/Kolkata
 
     steps:
       - name: Checkout code
@@ -46,7 +48,7 @@ jobs:
           exit 1
 
       - name: Run tests
-        run: mvn test -Dexecution=grid -Dbrowser=chrome -Dgrid.url=http://localhost:4444
+        run: mvn test -Dexecution=grid -Dbrowser=chrome -Dgrid.url=http://localhost:4444 -Dtimezone=Asia/Kolkata -Dtest.timezone=Asia/Kolkata
 
       - name: Upload TestNG and Extent reports
         if: always()

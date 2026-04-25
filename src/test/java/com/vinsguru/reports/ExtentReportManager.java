@@ -5,13 +5,13 @@ import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.MediaEntityBuilder;
 import com.aventstack.extentreports.reporter.ExtentSparkReporter;
 import com.vinsguru.util.ConfigReader;
+import com.vinsguru.util.DateTimeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.ITestResult;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public final class ExtentReportManager {
@@ -30,10 +30,11 @@ public final class ExtentReportManager {
         }
 
         try {
+            DateTimeUtil.setDefaultTimeZone();
             Path reportDir = Path.of("test-output", "extent-reports");
             Files.createDirectories(reportDir);
 
-            String reportName = "ExtentReport_" + LocalDateTime.now().format(FORMATTER) + ".html";
+            String reportName = "ExtentReport_" + DateTimeUtil.now(FORMATTER) + ".html";
             Path reportPath = reportDir.resolve(reportName);
 
             ExtentSparkReporter sparkReporter = new ExtentSparkReporter(reportPath.toString());
@@ -47,6 +48,7 @@ public final class ExtentReportManager {
             extentReports.setSystemInfo("Execution", ConfigReader.get("execution"));
             extentReports.setSystemInfo("Browser", ConfigReader.get("browser"));
             extentReports.setSystemInfo("Grid URL", ConfigReader.get("grid.url"));
+            extentReports.setSystemInfo("Timezone", DateTimeUtil.zoneId());
             extentReports.setSystemInfo("OS", System.getProperty("os.name"));
             extentReports.setSystemInfo("Java", System.getProperty("java.version"));
 
