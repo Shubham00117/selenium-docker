@@ -32,7 +32,8 @@ jobs:
       - name: Wait for Selenium Grid
         run: |
           for i in {1..30}; do
-            if curl -fsS http://localhost:4444/status | grep -q '"ready":true'; then
+            if curl -fsS http://localhost:4444/status -o /tmp/grid-status.json \
+              && python3 -c 'import json, sys; sys.exit(0 if json.load(open("/tmp/grid-status.json"))["value"].get("ready") else 1)'; then
               echo "Selenium Grid is ready"
               exit 0
             fi
@@ -40,6 +41,7 @@ jobs:
             sleep 2
           done
 
+          cat /tmp/grid-status.json || true
           docker compose logs
           exit 1
 
