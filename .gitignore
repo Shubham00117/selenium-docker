@@ -1,0 +1,15 @@
+target/
+test-output/
+logs/
+screenshots/
+videos/
+
+.idea/
+.vscode/
+.settings/
+.codex/
+.classpath
+.project
+*.iml
+
+.DS_Store

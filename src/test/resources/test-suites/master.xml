@@ -1,0 +1,14 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<suite name="master-suite" thread-count="2">
+
+    <listeners>
+        <listener class-name="com.vinsguru.listeners.TestListener"/>
+    </listeners>
+
+    <suite-files>
+        <suite-file path="flight-reservation.xml"/>
+        <suite-file path="vendor-portal.xml"/>
+    </suite-files>
+
+</suite>

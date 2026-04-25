@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vinsguru</groupId>
+    <artifactId>selenium-docker</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <properties>
+        <!-- Versions -->
+        <selenium.java.version>4.33.0</selenium.java.version>
+        <testng.version>7.11.0</testng.version>
+        <webdriver.manager.version>6.1.0</webdriver.manager.version>
+        <jackson.version>2.19.0</jackson.version>
+        <logback.version>1.5.18</logback.version>
+        <extentreports.version>5.1.2</extentreports.version>
+
+        <!-- Plugins -->
+        <maven.compiler.version>3.11.0</maven.compiler.version>
+        <maven.surefire.version>3.1.2</maven.surefire.version>
+        <maven.test.failure.ignore>false</maven.test.failure.ignore>
+
+        <!-- Master Suite -->
+        <surefire.suiteXmlFiles>
+            src/test/resources/test-suites/master.xml
+        </surefire.suiteXmlFiles>
+    </properties>
+
+    <dependencies>
+
+        <!-- Selenium -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium.java.version}</version>
+        </dependency>
+
+        <!-- TestNG -->
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- WebDriverManager -->
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>${webdriver.manager.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- Logging -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${logback.version}</version>
+        </dependency>
+
+        <!-- ExtentReports -->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>${extentreports.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+
+            <!-- Compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.version}</version>
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+
+            <!-- Surefire (Parallel Execution) -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven.surefire.version}</version>
+
+                <configuration>
+
+                    <!-- Keep Maven/TestNG reports in the standard TestNG output folder -->
+                    <reportsDirectory>${project.basedir}/test-output</reportsDirectory>
+
+                    <!-- Allows local report validation with -Dmaven.test.failure.ignore=true -->
+                    <testFailureIgnore>${maven.test.failure.ignore}</testFailureIgnore>
+
+                    <!-- Master Suite -->
+                    <suiteXmlFiles>
+                        <suiteXmlFile>${surefire.suiteXmlFiles}</suiteXmlFile>
+                    </suiteXmlFiles>
+
+                    <!-- 🔥 PARALLEL EXECUTION -->
+                    <parallel>tests</parallel>
+                    <threadCount>8</threadCount>
+
+                    <!-- Optional but useful -->
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
+
+                    <!-- Grid config -->
+                    <systemPropertyVariables>
+                        <execution>grid</execution>
+                        <grid.url>http://localhost:4444</grid.url>
+                    </systemPropertyVariables>
+
+                </configuration>
+            </plugin>
+
+        </plugins>
+    </build>
+
+</project>
