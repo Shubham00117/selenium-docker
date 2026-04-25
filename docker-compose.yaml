@@ -4,9 +4,9 @@ services:
   selenium-hub:
     image: selenium/hub:4.21.0   # hub image
     ports:
-      - "4442:4442"   # publish
-      - "4443:4443"   # subscribe
-      - "4444:4444"   # ui
+      - "${SE_HUB_PUBLISH_PORT:-4442}:4442"   # publish
+      - "${SE_HUB_SUBSCRIBE_PORT:-4443}:4443"   # subscribe
+      - "${SE_HUB_UI_PORT:-4444}:4444"   # ui
 
   # chrome node
   chrome:
