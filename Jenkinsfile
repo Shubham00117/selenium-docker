@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GRID_URL = 'http://localhost:5544'
+        GRID_URL = 'http://localhost:4444'   // ✅ match docker-compose
     }
 
     stages {
@@ -12,7 +12,21 @@ pipeline {
                 sh '''
                     echo "Checking Selenium Grid..."
 
-                    curl "$GRID_URL/status" || exit 1
+                    RESPONSE=$(curl -s --max-time 5 "$GRID_URL/status")
+
+                    if [ -z "$RESPONSE" ]; then
+                      echo "Grid not reachable ❌"
+                      exit 1
+                    fi
+
+                    echo "$RESPONSE"
+
+                    if echo "$RESPONSE" | grep -q '"ready":true'; then
+                      echo "Grid is READY ✅"
+                    else
+                      echo "Grid not ready ❌"
+                      exit 1
+                    fi
                 '''
             }
         }
