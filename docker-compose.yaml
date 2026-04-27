@@ -1,48 +1,34 @@
 services:
 
-  # hub
   selenium-hub:
-    image: selenium/hub:4.21.0   # hub image
+    image: selenium/hub:4.21.0
     ports:
-      - "${SE_HUB_PUBLISH_PORT:-4442}:4442"   # publish
-      - "${SE_HUB_SUBSCRIBE_PORT:-4443}:4443"   # subscribe
-      - "${SE_HUB_UI_PORT:-4444}:4444"   # ui
+      - "${SE_HUB_PUBLISH_PORT}:${SE_HUB_PUBLISH_PORT}"
+      - "${SE_HUB_SUBSCRIBE_PORT}:${SE_HUB_SUBSCRIBE_PORT}"
+      - "${SE_HUB_UI_PORT}:${SE_HUB_UI_PORT}"
 
-  # chrome node
   chrome:
-    image: selenium/node-chromium:4.21.0   # chrome
-    shm_size: 2gb   # memory
+    image: selenium/node-chromium:4.21.0
+    shm_size: 2gb
     depends_on:
-      - selenium-hub   # wait hub
+      - selenium-hub
     environment:
-      - SE_EVENT_BUS_HOST=selenium-hub   # host
-      - SE_EVENT_BUS_PUBLISH_PORT=4442   # pub
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443 # sub
-      - SE_NODE_MAX_SESSIONS=4   # parallel
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true   # override
-      - VNC_NO_PASSWORD=1   # no vnc password
+      - SE_EVENT_BUS_HOST=${SE_EVENT_BUS_HOST}
+      - SE_EVENT_BUS_PUBLISH_PORT=${SE_EVENT_BUS_PUBLISH_PORT}
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=${SE_EVENT_BUS_SUBSCRIBE_PORT}
+      - SE_NODE_MAX_SESSIONS=${CHROME_MAX_SESSIONS}
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - VNC_NO_PASSWORD=${VNC_NO_PASSWORD}
 
-  # firefox node
   firefox:
-    image: selenium/node-firefox:4.21.0   # firefox
-    shm_size: 2gb   # memory
+    image: selenium/node-firefox:4.21.0
+    shm_size: 2gb
     depends_on:
-      - selenium-hub   # wait hub
+      - selenium-hub
     environment:
-      - SE_EVENT_BUS_HOST=selenium-hub   # host
-      - SE_EVENT_BUS_PUBLISH_PORT=4442   # pub
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443 # sub
-      - SE_NODE_MAX_SESSIONS=1   # parallel
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true   # override
-      - VNC_NO_PASSWORD=1   # no vnc password
-
-# video (commented)
-# video:
-#   image: selenium/video:ffmpeg   # recorder
-#   depends_on:
-#     - chrome   # target
-#   volumes:
-#     - ./videos:/videos   # save
-#   environment:
-#     - DISPLAY_CONTAINER_NAME=chrome   # source
-#     - FILE_NAME=test.mp4   # file
+      - SE_EVENT_BUS_HOST=${SE_EVENT_BUS_HOST}
+      - SE_EVENT_BUS_PUBLISH_PORT=${SE_EVENT_BUS_PUBLISH_PORT}
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=${SE_EVENT_BUS_SUBSCRIBE_PORT}
+      - SE_NODE_MAX_SESSIONS=${FIREFOX_MAX_SESSIONS}
+      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
+      - VNC_NO_PASSWORD=${VNC_NO_PASSWORD}
