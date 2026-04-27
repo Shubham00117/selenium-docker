@@ -16,13 +16,18 @@ pipeline {
 
         stage('Wait for Grid Ready') {
             steps {
-                // wait until selenium grid is ready
+                // wait until grid is ready
                 sh '''
-                    for i in $(seq 1 20); do
-                      if curl -s "$GRID_URL/status" | grep -q '"ready":true'; then
+                    for i in $(seq 1 30); do
+                      RESPONSE=$(curl -s "$GRID_URL/status")
+
+                      echo "Response: $RESPONSE"
+
+                      if echo "$RESPONSE" | grep -q '"ready":true'; then
                         echo "Grid is ready"
                         exit 0
                       fi
+
                       echo "Waiting for Grid..."
                       sleep 2
                     done
@@ -35,7 +40,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // run maven tests on grid
+                // run maven tests
                 sh '''
                     mvn test \
                     -Dexecution=grid \
@@ -48,7 +53,7 @@ pipeline {
 
     post {
         always {
-            // stop docker after execution
+            // stop docker
             sh 'docker compose down'
         }
     }
