@@ -7,45 +7,12 @@ pipeline {
 
     stages {
 
-        stage('Start Selenium Grid') {
+        stage('Check Grid') {
             steps {
                 sh '''
-                    echo "Starting Selenium Grid..."
-                    docker compose down || true
-                    docker compose up -d
-                '''
-            }
-        }
+                    echo "Checking Selenium Grid..."
 
-        stage('Wait for Grid Ready') {
-            steps {
-                sh '''
-                    echo "Waiting for Selenium Grid..."
-
-                    for i in $(seq 1 60); do
-                      echo "Attempt $i"
-
-                      RESPONSE=$(curl -s --max-time 5 "$GRID_URL/status")
-
-                      if [ -z "$RESPONSE" ]; then
-                        echo "No response from Grid"
-                      else
-                        echo "$RESPONSE"
-                      fi
-
-                      if echo "$RESPONSE" | grep -q '"ready":true'; then
-                        echo "Grid is READY ✅"
-                        exit 0
-                      fi
-
-                      sleep 3
-                    done
-
-                    echo "Grid NOT READY ❌"
-                    echo "===== DOCKER LOGS ====="
-                    docker compose logs --tail=200
-
-                    exit 1
+                    curl "$GRID_URL/status" || exit 1
                 '''
             }
         }
@@ -61,15 +28,6 @@ pipeline {
                     -Dgrid.url=$GRID_URL
                 '''
             }
-        }
-    }
-
-    post {
-        always {
-            sh '''
-                echo "Stopping Docker..."
-                docker compose down
-            '''
         }
     }
 }
