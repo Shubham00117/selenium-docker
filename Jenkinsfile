@@ -74,13 +74,23 @@ pipeline {
         always {
             echo "Publishing Test Reports..."
 
-            // ✅ Correct JUnit path (TestNG XML reports)
+            // =========================
+            // ✅ 1. TestNG (Jenkins UI)
+            // =========================
             junit allowEmptyResults: true, testResults: 'test-output/junitreports/*.xml'
 
-            // ✅ Archive all reports (Extent + logs)
-            archiveArtifacts artifacts: 'test-output/**/*.*', allowEmptyArchive: true
+            publishHTML([
+                reportDir: 'test-output',
+                reportFiles: 'emailable-report.html',
+                reportName: 'TestNG Report',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: true
+            ])
 
-            // ✅ Extent HTML Report (SAFE - won’t fail if plugin missing)
+            // =========================
+            // 🔥 2. Extent Report
+            // =========================
             script {
                 try {
                     publishHTML([
@@ -92,15 +102,28 @@ pipeline {
                         keepAll: true
                     ])
                 } catch (Exception e) {
-                    echo "HTML Publisher Plugin not installed, skipping HTML report..."
+                    echo "Extent HTML report skipped (plugin issue)"
                 }
             }
 
-            // ✅ Stop Docker after execution
-            sh '''
-                echo "Stopping Docker Grid..."
-                docker compose down
-            '''
+            // =========================
+            // 📦 3. Archive ALL reports
+            // =========================
+            archiveArtifacts artifacts: 'test-output/**/*.*', allowEmptyArchive: true
+
+            // =========================
+            // 🧹 4. Stop Docker (safe)
+            // =========================
+            script {
+                try {
+                    sh '''
+                        echo "Stopping Docker Grid..."
+                        docker compose down
+                    '''
+                } catch (Exception e) {
+                    echo "Docker cleanup failed"
+                }
+            }
         }
     }
 }
