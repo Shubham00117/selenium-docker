@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GRID_URL = 'http://localhost:4444'   // ✅ match docker-compose
+        GRID_URL = 'http://localhost:4444'
     }
 
     stages {
@@ -21,7 +21,7 @@ pipeline {
 
                     echo "$RESPONSE"
 
-                    if echo "$RESPONSE" | grep -q '"ready":true'; then
+                    if echo "$RESPONSE" | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'; then
                       echo "Grid is READY ✅"
                     else
                       echo "Grid not ready ❌"
