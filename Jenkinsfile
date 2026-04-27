@@ -9,30 +9,37 @@ pipeline {
 
         stage('Start Selenium Grid') {
             steps {
-                // start docker grid
-                sh 'docker compose up -d'
+                sh '''
+                    echo "Starting Selenium Grid..."
+                    docker compose down || true
+                    docker compose up -d
+                '''
             }
         }
 
         stage('Wait for Grid Ready') {
             steps {
-                // wait until grid is ready
                 sh '''
-                    for i in $(seq 1 30); do
-                      RESPONSE=$(curl -s "$GRID_URL/status")
+                    echo "Waiting for Selenium Grid..."
 
-                      echo "Response: $RESPONSE"
+                    for i in $(seq 1 60); do
+                      STATUS=$(curl -s "$GRID_URL/status")
 
-                      if echo "$RESPONSE" | grep -q '"ready":true'; then
-                        echo "Grid is ready"
+                      echo "Attempt $i"
+                      echo "$STATUS"
+
+                      if echo "$STATUS" | grep -q '"ready":true'; then
+                        echo "Grid is READY ✅"
                         exit 0
                       fi
 
-                      echo "Waiting for Grid..."
-                      sleep 2
+                      sleep 3
                     done
 
-                    echo "Grid not ready"
+                    echo "Grid NOT READY ❌"
+                    echo "===== DOCKER LOGS ====="
+                    docker compose logs --tail=200
+
                     exit 1
                 '''
             }
@@ -40,8 +47,9 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                // run maven tests
                 sh '''
+                    echo "Running Tests..."
+
                     mvn test \
                     -Dexecution=grid \
                     -Dbrowser=chrome \
@@ -53,8 +61,10 @@ pipeline {
 
     post {
         always {
-            // stop docker
-            sh 'docker compose down'
+            sh '''
+                echo "Stopping Docker..."
+                docker compose down
+            '''
         }
     }
 }
