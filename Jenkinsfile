@@ -1,53 +1,38 @@
 pipeline {
     agent any
 
-    options {
-        timestamps()
-        timeout(time: 30, unit: 'MINUTES')
-        disableConcurrentBuilds()
-        buildDiscarder(logRotator(numToKeepStr: '20'))
-    }
-
-    parameters {
-        choice(name: 'BROWSER', choices: ['chrome', 'firefox'], description: 'Browser to run the suite against')
-        string(name: 'SUITE_XML', defaultValue: 'src/test/resources/test-suites/master.xml', description: 'TestNG suite XML to execute')
-    }
-
     environment {
-        SE_HUB_PUBLISH_PORT = '5542'
-        SE_HUB_SUBSCRIBE_PORT = '5543'
-        SE_HUB_UI_PORT = '5544'
         GRID_URL = 'http://localhost:5544'
-        TZ = 'Asia/Kolkata'
     }
 
     stages {
-        stage('Checkout') {
+
+        stage('Get Code') {
             steps {
+                // download code from GitHub (main branch)
                 git branch: 'main', url: 'https://github.com/Shubham00117/selenium-docker.git'
             }
         }
 
-        stage('Start Selenium Grid') {
+        stage('Start Grid') {
             steps {
-                sh 'docker compose up -d --remove-orphans'
+                // start selenium grid using docker
+                sh 'docker compose up -d'
             }
         }
 
-        stage('Wait for Grid') {
+        stage('Wait for Grid Ready') {
             steps {
+                // wait until grid is ready
                 sh '''
-                    for i in $(seq 1 30); do
-                      if curl -fsS "$GRID_URL/status" | grep -Eq '"ready"[[:space:]]*:[[:space:]]*true'; then
-                        echo "Selenium Grid is ready"
+                    for i in {1..20}; do
+                      if curl -s "$GRID_URL/status" | grep true; then
+                        echo "Grid is ready"
                         exit 0
                       fi
-
-                      echo "Waiting for Selenium Grid..."
+                      echo "Waiting..."
                       sleep 2
                     done
-
-                    docker compose logs --tail=200 || true
                     exit 1
                 '''
             }
@@ -55,17 +40,12 @@ pipeline {
 
         stage('Run Tests') {
             steps {
+                // run maven tests on grid
                 sh '''
-                    BROWSER_VALUE="${BROWSER:-chrome}"
-                    SUITE_XML_VALUE="${SUITE_XML:-src/test/resources/test-suites/master.xml}"
-
-                    mvn -B -ntp test \
-                      -Dexecution=grid \
-                      -Dbrowser="$BROWSER_VALUE" \
-                      -Dgrid.url="$GRID_URL" \
-                      -Dsurefire.suiteXmlFiles="$SUITE_XML_VALUE" \
-                      -Dtimezone="$TZ" \
-                      -Dtest.timezone="$TZ"
+                    mvn test \
+                    -Dexecution=grid \
+                    -Dbrowser=chrome \
+                    -Dgrid.url=$GRID_URL
                 '''
             }
         }
@@ -73,11 +53,8 @@ pipeline {
 
     post {
         always {
-            archiveArtifacts artifacts: 'test-output/**', allowEmptyArchive: true
-            sh 'docker compose down -v --remove-orphans || true'
-        }
-        failure {
-            sh 'docker compose logs --tail=200 || true'
+            // stop docker after execution
+            sh 'docker compose down'
         }
     }
 }
