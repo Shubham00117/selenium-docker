@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GRID_URL = 'http://host.docker.internal:5544'
+        GRID_URL = 'http://localhost:5544'
     }
 
     stages {
@@ -23,12 +23,17 @@ pipeline {
                     echo "Waiting for Selenium Grid..."
 
                     for i in $(seq 1 60); do
-                      STATUS=$(curl -s "$GRID_URL/status" || true)
-
                       echo "Attempt $i"
-                      echo "$STATUS"
 
-                      if echo "$STATUS" | grep -q '"ready":true'; then
+                      RESPONSE=$(curl -s --max-time 5 "$GRID_URL/status")
+
+                      if [ -z "$RESPONSE" ]; then
+                        echo "No response from Grid"
+                      else
+                        echo "$RESPONSE"
+                      fi
+
+                      if echo "$RESPONSE" | grep -q '"ready":true'; then
                         echo "Grid is READY ✅"
                         exit 0
                       fi
