@@ -7,32 +7,27 @@ pipeline {
 
     stages {
 
-        stage('Get Code') {
+        stage('Start Selenium Grid') {
             steps {
-                // download code from GitHub (main branch)
-                git branch: 'main', url: 'https://github.com/Shubham00117/selenium-docker.git'
-            }
-        }
-
-        stage('Start Grid') {
-            steps {
-                // start selenium grid using docker
+                // start docker grid
                 sh 'docker compose up -d'
             }
         }
 
         stage('Wait for Grid Ready') {
             steps {
-                // wait until grid is ready
+                // wait until selenium grid is ready
                 sh '''
-                    for i in {1..20}; do
-                      if curl -s "$GRID_URL/status" | grep true; then
+                    for i in $(seq 1 20); do
+                      if curl -s "$GRID_URL/status" | grep -q '"ready":true'; then
                         echo "Grid is ready"
                         exit 0
                       fi
-                      echo "Waiting..."
+                      echo "Waiting for Grid..."
                       sleep 2
                     done
+
+                    echo "Grid not ready"
                     exit 1
                 '''
             }
