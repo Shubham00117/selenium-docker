@@ -74,19 +74,27 @@ pipeline {
         always {
             echo "Publishing Test Reports..."
 
-            junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+            // ✅ Correct JUnit path (TestNG XML reports)
+            junit allowEmptyResults: true, testResults: 'test-output/junitreports/*.xml'
 
-            archiveArtifacts artifacts: 'target/surefire-reports/**/*.*', allowEmptyArchive: true
+            // ✅ Archive all reports (Extent + logs)
+            archiveArtifacts artifacts: 'test-output/**/*.*', allowEmptyArchive: true
 
-            // Optional HTML report
-            publishHTML([
-                reportDir: 'target/surefire-reports',
-                reportFiles: 'index.html',
-                reportName: 'Test Report',
-                allowMissing: true,
-                alwaysLinkToLastBuild: true,
-                keepAll: true
-            ])
+            // ✅ Extent HTML Report (SAFE - won’t fail if plugin missing)
+            script {
+                try {
+                    publishHTML([
+                        reportDir: 'test-output/extent-reports',
+                        reportFiles: '*.html',
+                        reportName: 'Extent Report',
+                        allowMissing: true,
+                        alwaysLinkToLastBuild: true,
+                        keepAll: true
+                    ])
+                } catch (Exception e) {
+                    echo "HTML Publisher Plugin not installed, skipping HTML report..."
+                }
+            }
 
             // ✅ Stop Docker after execution
             sh '''
