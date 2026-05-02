@@ -123,7 +123,7 @@
 
                     <!-- Grid config -->
                     <systemPropertyVariables>
-                        <execution>grid</execution>
+                        <execution>local</execution>
                         <grid.url>http://localhost:4444</grid.url>
                         <timezone>${test.timezone}</timezone>
                     </systemPropertyVariables>

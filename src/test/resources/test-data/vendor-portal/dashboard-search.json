@@ -1,0 +1,5 @@
+[
+  {"username": "sam", "password": "sam", "searchKeyword": "some_keyword"},
+  {"username": "sam", "password": "sam", "searchKeyword": "12345"},
+  {"username": "sam", "password": "sam", "searchKeyword": "!@#$%"}
+]

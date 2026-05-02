@@ -1,0 +1,12 @@
+[
+  {"username": "invalid_user", "password": "invalid_password"},
+  {"username": "sam", "password": "wrong_pass"},
+  {"username": "wrong_user", "password": "sam"},
+  {"username": "", "password": ""},
+  {"username": "sam", "password": ""},
+  {"username": "", "password": "sam"},
+  {"username": "12345", "password": "67890"},
+  {"username": "user@domain.com", "password": "password"},
+  {"username": "DROP TABLE users;", "password": "password"},
+  {"username": "<script>alert('xss')</script>", "password": "pass"}
+]
