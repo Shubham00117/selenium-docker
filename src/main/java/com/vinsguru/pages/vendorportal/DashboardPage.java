@@ -92,11 +92,12 @@ public class DashboardPage extends AbstractPage {
     }
 
     public void logout(){
-        this.userProfilePictureElement.click();
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", this.userProfilePictureElement);
         this.wait.until(ExpectedConditions.visibilityOf(this.logoutLink));
-        this.logoutLink.click();
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", this.logoutLink);
         this.wait.until(ExpectedConditions.visibilityOf(this.modalLogoutButton));
-        this.modalLogoutButton.click();
+        // JS click to bypass fade-in animation interception
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", this.modalLogoutButton);
     }
 
 }

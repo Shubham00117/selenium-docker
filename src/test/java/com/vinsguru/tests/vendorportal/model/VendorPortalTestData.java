@@ -7,7 +7,10 @@ public record VendorPortalTestData(String username,
                                    String profitMargin,
                                    String availableInventory,
                                    String searchKeyword,
-                                   int searchResultsCount) {
+                                   int searchResultsCount,
+                                   String invalidUsername,
+                                   String invalidPassword,
+                                   String invalidSearchKeyword) {
 }
 
 /*

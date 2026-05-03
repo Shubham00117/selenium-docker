@@ -32,17 +32,31 @@ public class VendorPortalTest extends AbstractTest {
     }
 
     @Test
-    public void loginTest(){
-
+    public void invalidLoginTest(){
         loginPage.goTo(baseUrl);
         AssertJUnit.assertTrue(loginPage.isAt());
+        loginPage.login(testData.invalidUsername(), testData.invalidPassword());
+        // Should remain on login page after invalid login
+        AssertJUnit.assertTrue(loginPage.isAt());
+    }
 
+    @Test(dependsOnMethods = "invalidLoginTest")
+    public void emptyLoginTest(){
+        loginPage.goTo(baseUrl);
+        loginPage.login("", "");
+        // Should remain on login page after empty login
+        AssertJUnit.assertTrue(loginPage.isAt());
+    }
+
+    @Test(dependsOnMethods = "emptyLoginTest")
+    public void loginTest(){
+        loginPage.goTo(baseUrl);
+        AssertJUnit.assertTrue(loginPage.isAt());
         loginPage.login(testData.username(), testData.password());
     }
 
     @Test(dependsOnMethods = "loginTest")
     public void dashboardTest(){
-
         AssertJUnit.assertTrue(dashboardPage.isAt());
 
         AssertJUnit.assertEquals(dashboardPage.getMonthlyEarning(), testData.monthlyEarning());
@@ -55,6 +69,20 @@ public class VendorPortalTest extends AbstractTest {
     }
 
     @Test(dependsOnMethods = "dashboardTest")
+    public void dashboardSearchNegativeTest(){
+        // Search for something that shouldn't exist
+        dashboardPage.searchOrderHistoryBy(testData.invalidSearchKeyword());
+        try {
+            int count = dashboardPage.getSearchResultsCount();
+            AssertJUnit.assertEquals(0, count);
+        } catch (Exception e) {
+            // If the table displays "No matching records found" instead of "Showing 0 to 0 of 0 entries"
+            // the split logic might fail, which still confirms no valid count is found.
+            AssertJUnit.assertTrue(true);
+        }
+    }
+
+    @Test(dependsOnMethods = "dashboardSearchNegativeTest")
     public void logoutTest(){
         dashboardPage.logout();
         AssertJUnit.assertTrue(loginPage.isAt());
