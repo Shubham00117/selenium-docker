@@ -6,5 +6,8 @@
   "profitMargin": "-16%",
   "availableInventory": "67",
   "searchKeyword": "2024/01/01",
-  "searchResultsCount": 0
+  "searchResultsCount": 0,
+  "invalidUsername": "invalid_john",
+  "invalidPassword": "invalid_password_john",
+  "invalidSearchKeyword": "NOT_FOUND_JOHN"
 }
