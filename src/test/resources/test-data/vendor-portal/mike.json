@@ -6,5 +6,8 @@
   "profitMargin": "80%",
   "availableInventory": "45",
   "searchKeyword": "miami",
-  "searchResultsCount": 10
+  "searchResultsCount": 10,
+  "invalidUsername": "invalid_mike",
+  "invalidPassword": "invalid_password_mike",
+  "invalidSearchKeyword": "NOT_FOUND_MIKE"
 }
