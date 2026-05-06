@@ -9,6 +9,30 @@
         </classes>
     </test>
 
+    <test name="login-scenarios">
+        <classes>
+            <class name="com.vinsguru.tests.vendorportal.VendorPortalLoginScenariosTest"/>
+        </classes>
+    </test>
+
+    <test name="dashboard-scenarios">
+        <classes>
+            <class name="com.vinsguru.tests.vendorportal.VendorPortalDashboardScenariosTest"/>
+        </classes>
+    </test>
+
+    <test name="metrics-scenarios">
+        <classes>
+            <class name="com.vinsguru.tests.vendorportal.VendorPortalMetricsTest"/>
+        </classes>
+    </test>
+
+    <test name="boundary-scenarios">
+        <classes>
+            <class name="com.vinsguru.tests.vendorportal.VendorPortalBoundaryTest"/>
+        </classes>
+    </test>
+
     <test name="user-mike">
         <parameter name="testDataPath" value="test-data/vendor-portal/mike.json"/>
         <classes>

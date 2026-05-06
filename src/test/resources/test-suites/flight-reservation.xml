@@ -9,6 +9,7 @@
         </classes>
     </test>
 
+
     <test name="passengers-count-2">
         <parameter name="testDataPath" value="test-data/flight-reservation/passenger-2.json"/>
         <classes>
